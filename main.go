@@ -11,9 +11,15 @@ import (
 const (
 	Version = "0.0.1"
 
+	descBase = `manages your text snippets on your command line like Zach Holman'boom
+   goom <list>                   create a new list //TODO
+   goom <list>                   show items for a list //TODO
+   goom <list> <name> <value>    create a new list item //TODO
+   goom <name>                   copy item's value to clipboard /TODO
+   goom <list> <name>            copy item's value to clipboard //TODO`
 	descAll    = "show all items in all lists //TODO"
 	descEdit   = "edit the boom JSON file in $EDITOR //TODO"
-	descDelete = "deletes a list //TODO"
+	descDelete = "deletes a list or item from a list //TODO"
 	descOpen   = "open item's url in browser //TODO"
 	descRandom = "open a random item's url in browser //TODO"
 	descEcho   = "echo the item's value without copying //TODO"
@@ -23,8 +29,9 @@ const (
 func main() {
 	app := cli.NewApp()
 	app.Name = "goom"
-	app.Usage = "goom manages your text snippets on your command line like Zach Holman'boom"
+	app.Usage = descBase
 	app.Version = Version
+	app.Action = cmd.Base
 	app.Commands = []cli.Command{
 		{
 			Name:   "all",

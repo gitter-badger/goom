@@ -1,4 +1,4 @@
-package main_test
+package main
 
 import (
 	"log"
@@ -22,14 +22,14 @@ func TestCreateList(t *testing.T) {
 	err = repo.create("gifs")
 
 	if err != nil {
-		t.Fatalf(`repo.create("gifs") should not return an error.`)
+		t.Fatalf(`repo.create("gifs") should not return an error.:%s`, err)
 	}
 
 	db.View(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte("lists"))
-		v := b.Get([]byte("gifs"))
+		gifs := b.Bucket([]byte("gifs"))
 
-		if v == nil {
+		if gifs == nil {
 			t.Fatalf(`"gifs" list has not been found in "lists" bucket.`)
 		}
 

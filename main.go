@@ -1,9 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 
+	"github.com/boltdb/bolt"
 	"github.com/codegangsta/cli"
 	"github.com/humboldtux/goom/cmd"
 )
@@ -25,6 +27,27 @@ const (
 	descEcho   = "echo the item's value without copying //TODO"
 	descCopy   = "copy the item's value without echo //TODO"
 )
+
+type listRepo struct {
+	db *bolt.DB
+}
+
+func (repo listRepo) create(list string) error {
+	//retrieve the data
+	err := repo.db.Update(func(tx *bolt.Tx) error {
+		lists, err := tx.CreateBucketIfNotExists([]byte("lists"))
+		if err != nil {
+			return fmt.Errorf("Error creating 'lists' bucket %v", err)
+		}
+
+		_, err = lists.CreateBucket([]byte(list))
+		if err != nil {
+			return fmt.Errorf("Error creating list %s bucket", list)
+		}
+		return nil
+	})
+	return err
+}
 
 func main() {
 	app := cli.NewApp()

@@ -4,10 +4,13 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"os/user"
+	"path/filepath"
 
 	"github.com/boltdb/bolt"
 	"github.com/codegangsta/cli"
 	"github.com/humboldtux/goom/cmd"
+	"github.com/spf13/viper"
 )
 
 const (
@@ -30,6 +33,22 @@ const (
 
 type listRepo struct {
 	db *bolt.DB
+}
+
+func init() {
+	usr, err := user.Current()
+	if err != nil {
+		log.Fatal(err)
+	}
+	viper.SetDefault("goomPath", usr.HomeDir)
+	viper.SetDefault("configPath", filepath.Join(viper.GetString("goomPath"), ".goomrc"))
+	viper.SetDefault("dataPath", filepath.Join(viper.GetString("goomPath"), ".goom"))
+	viper.SetDefault("boltdbPath", filepath.Join(viper.GetString("dataPath"), "bolt.db"))
+
+	if _, err := os.Stat(viper.GetString("dataPath")); os.IsNotExist(err) {
+		os.Mkdir(viper.GetString("dataPath"), 0750)
+	}
+
 }
 
 func (repo listRepo) create(list string) error {

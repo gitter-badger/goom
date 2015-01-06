@@ -6,6 +6,7 @@ import (
 
 	"github.com/boltdb/bolt"
 	"github.com/codegangsta/cli"
+	"github.com/humboldtux/goom/repo"
 	"github.com/spf13/viper"
 )
 
@@ -22,9 +23,8 @@ func Base(ctx *cli.Context) {
 			db.Close()
 		}()
 
-		//NOT WORKING
-		//repo := listRepo{db}
-		//err = repo.create(args[0])
+		r := repo.List{db}
+		err = r.Create(args[0])
 		if err == nil {
 			fmt.Printf("List %s created", args[0])
 		}

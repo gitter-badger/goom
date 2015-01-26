@@ -42,7 +42,6 @@ func init() {
 	if _, err := os.Stat(viper.GetString("dataPath")); os.IsNotExist(err) {
 		os.Mkdir(viper.GetString("dataPath"), 0750)
 	}
-
 }
 
 func RunApp() {

@@ -28,7 +28,7 @@ func TestCreateItem(t *testing.T) {
 	err = item.Create("banana", "http://foo.com/banana.gif")
 
 	if err != nil {
-		t.Fatalf(`item.Create("earth", "http://foo.com/banana.gif") should not return an error.:%s`, err)
+		t.Fatalf(`item.Create("banana", "http://foo.com/banana.gif") should not return an error.:%s`, err)
 	}
 
 	db.View(func(tx *bolt.Tx) error {
@@ -50,7 +50,7 @@ func TestCreateItem(t *testing.T) {
 	err = item.Create("banana", "http://foo.com/banana2.gif")
 
 	if err == nil {
-		t.Fatalf(`item.Create("earth", "http://foo.com/banana2.gif") should not return an error.:%s`, err)
+		t.Fatalf(`item.Create("banana", "http://foo.com/banana2.gif") should not return an error.:%s`, err)
 	}
 
 	db.View(func(tx *bolt.Tx) error {

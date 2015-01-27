@@ -49,7 +49,7 @@ func TestCreateItem(t *testing.T) {
 
 	err = item.Create("banana", "http://foo.com/banana2.gif")
 
-	if err == nil {
+	if err != nil {
 		t.Fatalf(`item.Create("banana", "http://foo.com/banana2.gif") should not return an error.:%s`, err)
 	}
 

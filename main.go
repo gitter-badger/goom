@@ -1,13 +1,14 @@
-package main
+package goom
 
 import (
-	"fmt"
 	"log"
 	"os"
+	"os/user"
+	"path/filepath"
 
-	"github.com/boltdb/bolt"
 	"github.com/codegangsta/cli"
 	"github.com/humboldtux/goom/cmd"
+	"github.com/spf13/viper"
 )
 
 const (
@@ -28,28 +29,22 @@ const (
 	descCopy   = "copy the item's value without echo //TODO"
 )
 
-type listRepo struct {
-	db *bolt.DB
+func init() {
+	usr, err := user.Current()
+	if err != nil {
+		log.Fatal(err)
+	}
+	viper.SetDefault("goomPath", usr.HomeDir)
+	viper.SetDefault("configPath", filepath.Join(viper.GetString("goomPath"), ".goomrc"))
+	viper.SetDefault("dataPath", filepath.Join(viper.GetString("goomPath"), ".goom"))
+	viper.SetDefault("boltdbPath", filepath.Join(viper.GetString("dataPath"), "bolt.db"))
+
+	if _, err := os.Stat(viper.GetString("dataPath")); os.IsNotExist(err) {
+		os.Mkdir(viper.GetString("dataPath"), 0750)
+	}
 }
 
-func (repo listRepo) create(list string) error {
-	//retrieve the data
-	err := repo.db.Update(func(tx *bolt.Tx) error {
-		lists, err := tx.CreateBucketIfNotExists([]byte("lists"))
-		if err != nil {
-			return fmt.Errorf("Error creating 'lists' bucket %v", err)
-		}
-
-		_, err = lists.CreateBucket([]byte(list))
-		if err != nil {
-			return fmt.Errorf("Error creating list %s bucket", list)
-		}
-		return nil
-	})
-	return err
-}
-
-func main() {
+func RunApp() {
 	app := cli.NewApp()
 	app.Name = "goom"
 	app.Usage = descBase
@@ -92,6 +87,7 @@ func main() {
 			Action: cmd.Copy,
 		},
 	}
+
 	if err := app.Run(os.Args); err != nil {
 		log.Fatal(err)
 	}

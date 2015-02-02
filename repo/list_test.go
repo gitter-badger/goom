@@ -1,4 +1,4 @@
-package main
+package repo
 
 import (
 	"log"
@@ -18,11 +18,11 @@ func TestCreateList(t *testing.T) {
 		os.Remove("test.db")
 	}()
 
-	repo := listRepo{db}
-	err = repo.create("gifs")
+	repo := List{db}
+	err = repo.Create("gifs")
 
 	if err != nil {
-		t.Fatalf(`repo.create("gifs") should not return an error.:%s`, err)
+		t.Fatalf(`repo.Create("gifs") should not return an error.:%s`, err)
 	}
 
 	db.View(func(tx *bolt.Tx) error {
@@ -36,9 +36,9 @@ func TestCreateList(t *testing.T) {
 		return nil
 	})
 
-	err = repo.create("gifs")
+	err = repo.Create("gifs")
 
 	if err == nil {
-		t.Fatalf(`repo.create("gifs") should return an error.`)
+		t.Fatalf(`repo.Create("gifs") should return an error.`)
 	}
 }

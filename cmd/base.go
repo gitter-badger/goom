@@ -29,7 +29,20 @@ func Base(ctx *cli.Context) {
 			fmt.Printf("List %s created\n", args[0])
 		}
 	case 2:
-		fmt.Printf("Copying value of item %s from list %s to clipboard\n", args[1], args[0])
+		db, err := bolt.Open(viper.GetString("boltdbPath"), 0600, nil)
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer func() {
+			db.Close()
+		}()
+		i := repo.Item{db, args[0]}
+		v, err := i.Get(args[1])
+		if err != nil {
+			log.Fatal(err)
+		} else {
+			fmt.Printf("%s\n", v)
+		}
 	case 3:
 		db, err := bolt.Open(viper.GetString("boltdbPath"), 0600, nil)
 		if err != nil {

@@ -3,9 +3,9 @@ package repo
 import (
 	"log"
 	"os"
-	"os/exec"
 	"testing"
 
+	"github.com/atotto/clipboard"
 	"github.com/boltdb/bolt"
 )
 
@@ -103,12 +103,12 @@ func TestGetItem(t *testing.T) {
 		t.Fatalf(`the item "banana" in "gifs" list doesn't have the right value.`)
 	}
 
-	out, err := exec.Command("pbpaste").Output()
+	out, err := clipboard.ReadAll()
 	if err != nil {
 		t.Fatalf(err.Error())
 	}
 
-	if string(out) != "http://foo.com/banana.gif" {
+	if out != "http://foo.com/banana.gif" {
 		t.Fatalf("The value copied in the clipboard is:%s\nIt should be: http://foo.com/banana.gif", out)
 	}
 }

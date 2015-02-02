@@ -3,6 +3,7 @@ package repo
 import (
 	"log"
 	"os"
+	"os/exec"
 	"testing"
 
 	"github.com/boltdb/bolt"
@@ -68,4 +69,46 @@ func TestCreateItem(t *testing.T) {
 
 		return nil
 	})
+}
+
+func TestGetItem(t *testing.T) {
+	db, err := bolt.Open("test.db", 0600, nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer func() {
+		db.Close()
+		os.Remove("test.db")
+	}()
+
+	db.Update(func(tx *bolt.Tx) error {
+		lists, _ := tx.CreateBucketIfNotExists([]byte("lists"))
+		gifs, _ := lists.CreateBucket([]byte("gifs"))
+		gifs.Put([]byte("banana"), []byte("http://foo.com/banana.gif"))
+		return nil
+	})
+
+	item := Item{db, "gifs"}
+	banana, err := item.Get("banana")
+
+	if err != nil {
+		t.Fatalf(`item.Get("banana") should not return an error.:%s`, err)
+	}
+
+	if banana == nil {
+		t.Fatalf(`the item "banana" has not been found in "gifs" list.`)
+	}
+
+	if string(banana) != "http://foo.com/banana.gif" {
+		t.Fatalf(`the item "banana" in "gifs" list doesn't have the right value.`)
+	}
+
+	out, err := exec.Command("pbpaste").Output()
+	if err != nil {
+		t.Fatalf(err.Error())
+	}
+
+	if string(out) != "http://foo.com/banana.gif" {
+		t.Fatalf("The value copied in the clipboard is:%s\nIt should be: http://foo.com/banana.gif", out)
+	}
 }
